@@ -454,6 +454,84 @@ body{padding-bottom:100px!important}
   }
 }
 
+
+/* Admin product thumbnail fix */
+#adminView .row{
+  align-items:center;
+}
+#adminView .row .e{
+  width:56px !important;
+  height:56px !important;
+  min-width:56px !important;
+  flex:0 0 56px !important;
+  display:grid !important;
+  place-items:center !important;
+  overflow:hidden !important;
+  border-radius:10px;
+  background:#fff;
+  border:1px solid var(--line);
+}
+#adminView .row .e img{
+  width:100% !important;
+  height:100% !important;
+  max-width:56px !important;
+  max-height:56px !important;
+  object-fit:cover !important;
+  display:block !important;
+}
+#adminView .row > div{
+  min-width:0;
+}
+#adminView .row > div span{
+  overflow-wrap:anywhere;
+}
+
+
+/* Favorites / My Products thumbnail fix */
+#acctPanel .account-product-row{
+  display:grid !important;
+  grid-template-columns:64px minmax(0,1fr) auto !important;
+  gap:12px !important;
+  align-items:center !important;
+}
+#acctPanel .account-product-thumb{
+  width:64px !important;
+  height:64px !important;
+  min-width:64px !important;
+  flex:0 0 64px !important;
+  display:grid !important;
+  place-items:center !important;
+  overflow:hidden !important;
+  border-radius:12px !important;
+  border:1px solid var(--line) !important;
+  background:#fff !important;
+}
+#acctPanel .account-product-thumb img{
+  width:100% !important;
+  height:100% !important;
+  max-width:64px !important;
+  max-height:64px !important;
+  object-fit:cover !important;
+  object-position:center !important;
+  display:block !important;
+}
+#acctPanel .account-product-info{
+  min-width:0 !important;
+  padding:0 !important;
+  text-align:start !important;
+}
+#acctPanel .account-product-info b{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+#acctPanel .account-product-info span{
+  display:block;
+  margin-top:4px;
+  color:var(--muted);
+}
+
 </style>
 </head>
 <body>
@@ -797,9 +875,9 @@ function pf(id){return P.find(function(y){return y.id===id})||{id:id,c:"co",e:"�
 function drawAcct(){var h;
 if(!D.user){h=authForm()}
 else{var sectionTitle=tab==="mine"?"My Products":tab==="favs"?t().favs:tab==="deals"?t().deals:"Profile & Settings";h='<h2>'+sectionTitle+'</h2><p class="note">'+t().hi+' '+esc(D.user.name)+'</p>';
-if(tab==="mine"){var mine=P.filter(function(x){return x.seller_id===D.user.id});h+=mine.length?mine.map(function(x){return '<div class="row"><span class="e">'+productVisual(x)+'</span><button class="open" data-id="'+x.id+'"><b>'+esc(nm(x))+'</b><span>'+money(x.p)+'</span></button><span class="badge">'+esc(x.status||"available")+'</span></div>'}).join(""):'<p>No products published yet.</p>'}
+if(tab==="mine"){var mine=P.filter(function(x){return x.seller_id===D.user.id});h+=mine.length?mine.map(function(x){return '<div class="row account-product-row"><span class="e account-product-thumb">'+productVisual(x)+'</span><button class="open account-product-info" data-id="'+x.id+'"><b>'+esc(nm(x))+'</b><span>'+money(x.p)+'</span></button><span class="badge">'+esc(x.status||"available")+'</span></div>'}).join(""):'<p>No products published yet.</p>'}
 else if(tab==="prof"){h+='<div class="account-box"><h3>Profile & delivery details</h3><label class="field">'+t().uname+'<input id="pn" value="'+esc(D.user.name)+'"></label>'+dform()+'<button class="primary" id="psave">'+t().psave+'</button></div><div class="account-box"><h3>'+t().chpw+'</h3><label class="field">'+t().oldpw+'<input id="opw" type="password" autocomplete="current-password"></label><label class="field">'+t().newpw+'<input id="npw" type="password" autocomplete="new-password"></label><button class="chip" id="cpw">'+t().chpw+'</button><p class="note" id="pmsg"></p></div><div class="account-box"><h3>Account management</h3><p class="logout-note">Delete account is a separate account action. Use it only if you want to stop using this account.</p><button class="ghost" id="delacc">'+(delAcc?t().delsure:t().delacc)+'</button></div>'}
-else if(tab==="favs"){h+=D.favs.length?D.favs.map(function(id){var x=pf(id);return '<div class="row"><span class="e">'+x.e+'</span><button class="open" data-id="'+id+'"><b>'+esc(nm(x))+'</b><span>'+money(x.p)+'</span></button><button class="heart" data-f="'+id+'" aria-pressed="true" aria-label="'+t().unfav+'">♥</button></div>'}).join(""):'<p>'+t().nofav+'</p>'}
+else if(tab==="favs"){h+=D.favs.length?D.favs.map(function(id){var x=pf(id);if(!x)return "";return '<div class="row account-product-row favorite-product-row"><span class="e account-product-thumb">'+productVisual(x)+'</span><button class="open account-product-info" data-id="'+id+'"><b>'+esc(nm(x))+'</b><span>'+money(x.p)+'</span></button><button class="heart" data-f="'+id+'" aria-pressed="true" aria-label="'+t().unfav+'">♥</button></div>'}).join(""):'<p>'+t().nofav+'</p>'}
 else{var md=myDeals();h+=md.length?md.map(function(d){return '<div class="deal"><span class="badge">'+stl(d.st)+'</span> <b>'+t().order+' #'+d.n+'</b><small>'+new Date(d.at).toLocaleDateString(L)+'</small>'+d.items.map(function(i){var x=pf(i.id);return '<div>'+x.e+' '+esc(nm(x))+(i.s!=="-"?' ('+i.s+')':'')+' × '+i.q+'</div>'}).join("")+'<div class="total"><span>'+t().total+'</span><span>'+money(d.total)+'</span></div></div>'}).join(""):'<p>'+t().nodeal+'</p>'}
 h+='<div class="account-actions"><p class="logout-note"><b>Log out</b><br>Signs this device out of Sirne Bazar. Your account and saved profile remain available for your next sign-in.</p><button class="ghost" id="logout">'+t().out+'</button></div>'}
 h+=(D.user?'':'')+'<button class="ghost" id="closeA">'+t().keep+'</button>';
